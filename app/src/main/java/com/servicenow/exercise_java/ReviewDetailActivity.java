@@ -2,7 +2,6 @@ package com.servicenow.exercise_java;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,7 +45,7 @@ public class ReviewDetailActivity extends AppCompatActivity {
 
     private void populateUi() {
         this.reviewTv.setText(review.getReview());
-        this.ratingTv.setText(""+review.getRating());
+        this.ratingTv.setText("" + review.getRating());
         this.locationTv.setText(review.getLocation());
     }
 

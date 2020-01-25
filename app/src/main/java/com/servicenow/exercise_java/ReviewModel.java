@@ -6,6 +6,9 @@ import android.os.Parcelable;
 
 import com.servicenow.exercise.R;
 
+/**
+ * Model class of the API response
+ */
 public class ReviewModel implements Parcelable {
 
     public static final Creator<ReviewModel> CREATOR = new Creator<ReviewModel>() {
@@ -19,7 +22,10 @@ public class ReviewModel implements Parcelable {
             return new ReviewModel[size];
         }
     };
-
+    private final String name;
+    private final String review;
+    private final int rating;
+    private final String location;
     public ReviewModel(String name, String review, int rating, String location) {
         this.name = name;
         this.review = review;
@@ -27,10 +33,28 @@ public class ReviewModel implements Parcelable {
         this.location = location;
     }
 
-    private final String name;
-    private final String review;
-    private final int rating;
-    private final String location;
+    public ReviewModel(Parcel in) {
+        name = in.readString();
+        review = in.readString();
+        rating = in.readInt();
+        location = in.readString();
+    }
+
+    public static int getIconResourceFromName(String name) {
+        switch (name) {
+            case "Lofty":
+                return R.drawable.bean_bag;
+            case "Zumbar":
+                return R.drawable.coffee_cup;
+            case "Blue Bottle":
+                return R.drawable.coffee_grinder;
+            case "Bird Rock":
+                return R.drawable.coffee_maker;
+            case "Better Buzz Coffee":
+                return R.drawable.coffee_shop;
+        }
+        return -1;
+    }
 
     public String getName() {
         return name;
@@ -48,13 +72,6 @@ public class ReviewModel implements Parcelable {
         return location;
     }
 
-    public  ReviewModel(Parcel in) {
-        name = in.readString();
-        review = in.readString();
-        rating = in.readInt();
-        location = in.readString();
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -66,17 +83,6 @@ public class ReviewModel implements Parcelable {
         parcel.writeString(review);
         parcel.writeInt(rating);
         parcel.writeString(location);
-    }
-
-    public static int getIconResourceFromName(String name){
-        switch (name) {
-            case "Lofty" : return R.drawable.bean_bag;
-            case "Zumbar" : return R.drawable.coffee_cup;
-            case "Blue Bottle" : return R.drawable.coffee_grinder;
-            case "Bird Rock" : return R.drawable.coffee_maker;
-            case "Better Buzz Coffee" : return R.drawable.coffee_shop;
-        }
-        return -1;
     }
 
 }

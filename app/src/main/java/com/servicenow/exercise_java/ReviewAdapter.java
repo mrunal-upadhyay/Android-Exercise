@@ -1,6 +1,5 @@
 package com.servicenow.exercise_java;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +12,11 @@ import com.servicenow.exercise.R;
 
 import java.util.List;
 
+
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHolder> {
 
-    private List<ReviewModel> reviews;
     private final ReviewAdapterOnClickHandler reviewAdapterOnClickHandler;
+    private List<ReviewModel> reviews;
 
     //Initialize adapter
     public ReviewAdapter(List<ReviewModel> reviews, ReviewAdapterOnClickHandler onClickHandler) {
@@ -43,21 +43,21 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
 
     @Override
     public int getItemCount() {
-        if(reviews!=null) {
+        if (reviews != null) {
             return this.reviews.size();
         }
         return 0;
     }
 
-    public interface ReviewAdapterOnClickHandler {
-        void onClick(ReviewModel review);
-    }
-
     public void setReviewData(List<ReviewModel> reviews) {
-        if(reviews!=null) {
+        if (reviews != null) {
             this.reviews = reviews;
             notifyDataSetChanged();
         }
+    }
+
+    public interface ReviewAdapterOnClickHandler {
+        void onClick(ReviewModel review);
     }
 
     public class ReviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

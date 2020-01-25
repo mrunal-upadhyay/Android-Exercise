@@ -1,15 +1,13 @@
 package com.servicenow.exercise_java;
 
-import com.servicenow.coffee.Review;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 
-public interface FetchReviewService {
+public interface ReviewApi {
 
-    @GET("api/jsonBlob/c1a89a37-371e-11ea-a549-6f3544633231")
+    @GET(Constants.PATH)
     Call<ArrayList<ReviewModel>> fetchReviews();
 }
