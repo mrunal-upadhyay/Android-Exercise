@@ -9,18 +9,20 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.servicenow.coffee.Review;
 import com.servicenow.exercise.R;
 
 import java.util.List;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHolder> {
 
-    private List<Review> reviews;
+    private List<ReviewModel> reviews;
+    private final ReviewAdapterOnClickHandler reviewAdapterOnClickHandler;
 
     //Initialize adapter
-    public ReviewAdapter(List<Review> reviews) {
+    public ReviewAdapter(List<ReviewModel> reviews, ReviewAdapterOnClickHandler onClickHandler) {
         this.reviews = reviews;
+        this.reviewAdapterOnClickHandler = onClickHandler;
+
     }
 
     @Override
@@ -34,7 +36,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
     @Override
     public void onBindViewHolder(ReviewHolder holder, int position) {
         //Use position to access the correct Review object
-        Review review = this.reviews.get(position);
+        ReviewModel review = this.reviews.get(position);
         //Bind the Review object to the holder
         holder.bindData(review);
     }
@@ -42,6 +44,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
     @Override
     public int getItemCount() {
         return this.reviews.size();
+    }
+
+    public interface ReviewAdapterOnClickHandler {
+        void onClick(ReviewModel review);
+    }
+
+    public void setReviewData(List<ReviewModel> reviews) {
+        this.reviews = reviews;
+        notifyDataSetChanged();
     }
 
     public class ReviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -60,13 +71,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
 
         @Override
         public void onClick(View view) {
-            Log.d("ReviewAdapter", "Clicked on" + this.name + ":" + this.review);
+            int adapterPosition = getAdapterPosition();
+            ReviewModel review = reviews.get(adapterPosition);
+            reviewAdapterOnClickHandler.onClick(review);
         }
 
-        public void bindData(Review review) {
+        public void bindData(ReviewModel review) {
             this.name.setText(review.getName());
             this.review.setText(review.getReview());
-            this.reviewImage.setImageResource(Review.getIconResourceFromName(review.getName()));
+            this.reviewImage.setImageResource(ReviewModel.getIconResourceFromName(review.getName()));
         }
     }
 }

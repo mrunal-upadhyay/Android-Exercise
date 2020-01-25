@@ -46,7 +46,11 @@ class ReviewListActivityKt : ListActivity() {
             val review: Review = CoffeeShopReviews.list[position]
             shopName.text = review.name
             reviewText.text = review.review
-            reviewImage.setImageResource(Review.getIconResourceFromName(review.name))
+            review.name?.let { Review.getIconResourceFromName(it) }?.let {
+                reviewImage.setImageResource(
+                    it
+                )
+            }
             return row
         }
     }
