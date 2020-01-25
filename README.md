@@ -1,4 +1,4 @@
-# Servicenow-Android-Exercise
+# Android-Exercise
 ## Take-home project for Servicenow Android Candidates
 
 ### Requirements
