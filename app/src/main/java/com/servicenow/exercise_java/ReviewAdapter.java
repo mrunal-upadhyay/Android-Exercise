@@ -43,7 +43,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
 
     @Override
     public int getItemCount() {
-        return this.reviews.size();
+        if(reviews!=null) {
+            return this.reviews.size();
+        }
+        return 0;
     }
 
     public interface ReviewAdapterOnClickHandler {
@@ -51,8 +54,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
     }
 
     public void setReviewData(List<ReviewModel> reviews) {
-        this.reviews = reviews;
-        notifyDataSetChanged();
+        if(reviews!=null) {
+            this.reviews = reviews;
+            notifyDataSetChanged();
+        }
     }
 
     public class ReviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
