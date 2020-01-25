@@ -1,5 +1,5 @@
 # Android-Exercise
-## Take-home project for Servicenow Android Candidates
+## Take-home project for Android Candidates
 
 ### Requirements
 - A computer setup for Android development (contact your recruiter if one is not available)
