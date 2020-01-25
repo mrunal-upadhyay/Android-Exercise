@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,69 +26,37 @@ public class ReviewMainActivity extends AppCompatActivity implements ReviewAdapt
     private final String TAG = this.getClass().getSimpleName();
     private ArrayList<ReviewModel> coffeeShopReviewsList;
     private ReviewAdapter adapter;
+    private RecyclerView recyclerView;
     private Retrofit retrofit;
+    private ReviewMainViewModel reviewMainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        reviewMainViewModel = new ViewModelProvider(this).get(ReviewMainViewModel.class);
+        reviewMainViewModel.init();
+        setupRecyclerView();
 
-        adapter = new ReviewAdapter(coffeeShopReviewsList, this);
-
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(adapter);
-
-        //If the activity starts the very first time, make network call and fetch the data
-        if (savedInstanceState == null || !savedInstanceState.containsKey(Constants.REVIEW_BUNDLE_KEY)) {
-            loadReviewData();
-        //If the activity restarts and if we have saved state then use the state and dont make a network call
-        } else {
-            coffeeShopReviewsList = savedInstanceState.getParcelableArrayList(Constants.REVIEW_BUNDLE_KEY);
-            adapter.setReviewData(coffeeShopReviewsList);
-        }
+        final Observer<ArrayList<ReviewModel>> reviewObserver = new Observer<ArrayList<ReviewModel>>() {
+            @Override
+            public void onChanged(ArrayList<ReviewModel> reviewModels) {
+                if (reviewModels != null) {
+                    adapter.setReviewData(reviewModels);
+                }
+            }
+        };
+        reviewMainViewModel.getReviewsLiveData().observe(this, reviewObserver);
     }
 
-    private void loadReviewData() {
-//        Load data from local
-//        coffeeShopReviewsList = CoffeeShopReviewsData.getData();
-//        adapter.setReviewData(coffeeShopReviewsList);
-
-        //Load data from remote
-        Log.d(TAG, "Inside loadReviewData()");
-        if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(Constants.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+    private void setupRecyclerView() {
+        if (adapter == null) {
+            adapter = new ReviewAdapter(coffeeShopReviewsList, this);
+            recyclerView = findViewById(R.id.recyclerView);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setAdapter(adapter);
         }
-        FetchReviewService fetchReviewService = retrofit.create(FetchReviewService.class);
-
-        Call<ArrayList<ReviewModel>> call = fetchReviewService.fetchReviews();
-        call.enqueue(new Callback<ArrayList<ReviewModel>>() {
-            @Override
-            public void onResponse(Call<ArrayList<ReviewModel>> call, Response<ArrayList<ReviewModel>> response) {
-                Log.d(TAG, "Retrofit response: " + response.body().toString());
-                coffeeShopReviewsList = response.body();
-                adapter.setReviewData(coffeeShopReviewsList);
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<ReviewModel>> call, Throwable t) {
-                Log.e(TAG, t.toString());
-                //Make sure to show data to the user from local if remote call does not work
-                coffeeShopReviewsList = CoffeeShopReviewsData.getData();
-                adapter.setReviewData(coffeeShopReviewsList);
-            }
-        });
-    }
-
-    //Save the state if the activity gets paused(device rotation, user getting a phone call, user opens another app)
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Constants.REVIEW_BUNDLE_KEY, coffeeShopReviewsList);
-        super.onSaveInstanceState(outState);
     }
 
     //Launch Detail Activity when user clicks on a review from Main Activity
@@ -94,7 +65,7 @@ public class ReviewMainActivity extends AppCompatActivity implements ReviewAdapt
         Context context = this;
         Class destinationClass = ReviewDetailActivity.class;
         Intent intent = new Intent(context, destinationClass);
-        intent.putExtra(Constants.REVIEW_EXTRA,review);
+        intent.putExtra(Constants.REVIEW_EXTRA, review);
         startActivity(intent);
     }
 }
