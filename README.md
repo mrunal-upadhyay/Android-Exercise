@@ -2,7 +2,7 @@
 ## Take-home project for Android Candidates
 
 ### Requirements
-- A computer setup for Android development (contact your recruiter if one is not available)
+- A computer setup for Android development
 
 ### Objectives:
 - Have fun
