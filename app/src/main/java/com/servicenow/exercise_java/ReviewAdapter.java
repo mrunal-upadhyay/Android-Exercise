@@ -12,7 +12,15 @@ import com.servicenow.exercise.R;
 
 import java.util.List;
 
-
+/**
+ * Adapter that does the magic of adapting the data to recyclerview. 3 important methods here
+ * onCreateViewHolder - creating a new view that is saved in a viewholder
+ * onBindViewHolder -  Bind the data from reviews to VH views.
+ * getItemCount - returns the count of reviews.
+ * ViewHolder is a subclass that performs the actual recyling of the views
+ * that are not currently shown to the user making the logic performance efficient as
+ * OS does not need to make expensive findByViewId calls
+ */
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHolder> {
 
     private final ReviewAdapterOnClickHandler reviewAdapterOnClickHandler;

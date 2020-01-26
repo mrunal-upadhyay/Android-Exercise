@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.servicenow.exercise.R;
 
+//Detail Activity which is launched when the user clicks on a review.
+//REVIEW_DETAILS_BUNDLE_KEY contains the review that user has clicked on
 public class ReviewDetailActivity extends AppCompatActivity {
 
     private TextView reviewTv;
@@ -23,6 +25,7 @@ public class ReviewDetailActivity extends AppCompatActivity {
         ratingTv = findViewById(R.id.textrating);
         locationTv = findViewById(R.id.textlocation);
 
+        // check if the activity is newly created or recreated after a activity restart that can be because of a phone call or device rotation
         if (savedInstanceState == null || !savedInstanceState
                 .containsKey(Constants.REVIEW_DETAILS_BUNDLE_KEY)) {
             Intent intent = getIntent();
@@ -37,12 +40,14 @@ public class ReviewDetailActivity extends AppCompatActivity {
 
     }
 
+    //save the review if the activity is going to be paused and eventually stopped.
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(Constants.REVIEW_DETAILS_BUNDLE_KEY, review);
         super.onSaveInstanceState(outState);
     }
 
+    //Update the UI textviews with the data from review object.
     private void populateUi() {
         this.reviewTv.setText(review.getReview());
         this.ratingTv.setText("" + review.getRating());
