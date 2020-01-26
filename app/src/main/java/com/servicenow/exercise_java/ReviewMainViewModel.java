@@ -14,6 +14,8 @@ public class ReviewMainViewModel extends ViewModel {
     private MutableLiveData<ArrayList<ReviewModel>> reviewsLiveData;
     private ReviewRepository reviewRepository;
 
+    // Get an instance of review repository and make the api call through retrofit to fetch the reviews.
+    // Save the list of reviews in LiveData reviewsLiveData.
     public void init() {
         if (reviewsLiveData != null) {
             return;
