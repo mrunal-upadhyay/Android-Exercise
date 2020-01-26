@@ -1,5 +1,4 @@
 # Android-Exercise
-## Take-home project for Android Candidates
 
 ### Requirements
 - A computer setup for Android development
