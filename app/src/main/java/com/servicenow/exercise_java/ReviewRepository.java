@@ -2,6 +2,7 @@ package com.servicenow.exercise_java;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
@@ -17,10 +18,18 @@ import retrofit2.Response;
  */
 public class ReviewRepository {
 
+    private final String TAG = this.getClass().getSimpleName();
+
     private static ReviewRepository reviewRepository;
     private ReviewApi reviewApi;
 
+    private MutableLiveData<NetworkState> networkState;
+    private MutableLiveData<ArrayList<ReviewModel>> reviewsLiveData;
+
     public ReviewRepository() {
+        networkState = new MutableLiveData<>();
+        reviewsLiveData = new MutableLiveData<>();
+
         reviewApi = RetrofitService.createService(ReviewApi.class);
     }
 
@@ -31,24 +40,35 @@ public class ReviewRepository {
         return reviewRepository;
     }
 
-    public MutableLiveData<ArrayList<ReviewModel>> getReviews() {
-        MutableLiveData<ArrayList<ReviewModel>> reviewsLiveData = new MutableLiveData<>();
+    public LiveData<ArrayList<ReviewModel>> getReviews() {
+        networkState.postValue(NetworkState.LOADING);
         reviewApi.fetchReviews().enqueue(new Callback<ArrayList<ReviewModel>>() {
             @Override
             public void onResponse(Call<ArrayList<ReviewModel>> call, Response<ArrayList<ReviewModel>> response) {
                 if (response.isSuccessful()) {
-                    Log.d("ReviewRepository", "Retrofit response: " + response.body().toString());
+                    Log.d(TAG, "Retrofit onResponse: " + response.body().toString());
                     reviewsLiveData.setValue(response.body());
+                } else {
+                    Log.d(TAG, "Retrofit onResponse: " + response.message());
+                    networkState.setValue(NetworkState.FAILED);
                 }
             }
 
             @Override
             public void onFailure(Call<ArrayList<ReviewModel>> call, Throwable t) {
-                //Make sure to show data to the user from local if remote call does not work
-                reviewsLiveData.setValue(CoffeeShopReviewsData.getData());
+                String errorMessage;
+                if(t.getMessage() == null) {
+                    errorMessage = "unknown error";
+                } else {
+                    errorMessage = t.getMessage();
+                }
+                Log.d(TAG, "Retrofit onFailure: " + errorMessage);
             }
         });
         return reviewsLiveData;
     }
 
+    public LiveData<NetworkState> getNetworkState() {
+        return networkState;
+    }
 }

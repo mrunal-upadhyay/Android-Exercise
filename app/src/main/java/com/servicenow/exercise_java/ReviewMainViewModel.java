@@ -1,5 +1,6 @@
 package com.servicenow.exercise_java;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -11,21 +12,20 @@ import java.util.ArrayList;
  */
 public class ReviewMainViewModel extends ViewModel {
 
-    private MutableLiveData<ArrayList<ReviewModel>> reviewsLiveData;
     private ReviewRepository reviewRepository;
 
     // Get an instance of review repository and make the api call through retrofit to fetch the reviews.
     // Save the list of reviews in LiveData reviewsLiveData.
-    public void init() {
-        if (reviewsLiveData != null) {
-            return;
-        }
+    public  ReviewMainViewModel() {
         reviewRepository = ReviewRepository.getInstance();
-        reviewsLiveData = reviewRepository.getReviews();
     }
 
-    public MutableLiveData<ArrayList<ReviewModel>> getReviewsLiveData() {
-        return reviewsLiveData;
+    public LiveData<ArrayList<ReviewModel>> getReviews() {
+        return reviewRepository.getReviews();
+    }
+
+    public LiveData<NetworkState> getNetworkState() {
+        return reviewRepository.getNetworkState();
     }
 }
 
