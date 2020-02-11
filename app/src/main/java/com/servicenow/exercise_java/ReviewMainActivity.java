@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,24 +28,40 @@ public class ReviewMainActivity extends AppCompatActivity implements ReviewAdapt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        progressBar = findViewById(R.id.progressBar);
+
+        /* init UI*/
+        initUI();
+
+        /* init View Model*/
         reviewMainViewModel = new ViewModelProvider(this).get(ReviewMainViewModel.class);
-        reviewMainViewModel.init();
-        setupRecyclerView();
 
-        // Observer that will respond when there is change in the reviewModels ArrayList which is the data returned by the rest call.
-        final Observer<ArrayList<ReviewModel>> reviewObserver = new Observer<ArrayList<ReviewModel>>() {
-            @Override
-            public void onChanged(ArrayList<ReviewModel> reviewModels) {
-                if (reviewModels != null) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    adapter.setReviewData(reviewModels);
-                }
+        /* subscribe observers*/
+        subscribeReviewListObserver();
+
+        /* subscribe Network State Changes */
+        subscribeToNetworkState();
+
+    }
+
+    /**
+     * Observes Reviews from ViewModel
+     */
+    private void subscribeReviewListObserver() {
+        reviewMainViewModel.getReviews().observe(this, reviewModels -> {
+            progressBar.setVisibility(View.GONE);
+            adapter.setReviewData(reviewModels);
+        });
+    }
+
+    private void subscribeToNetworkState() {
+        reviewMainViewModel.getNetworkState().observe(this, networkState -> {
+            if(networkState == NetworkState.LOADING) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
             }
-        };
-
-        //register a observer to observe a change in the ReviewModel livedata.
-        reviewMainViewModel.getReviewsLiveData().observe(this, reviewObserver);
+            Log.d(TAG, "Network Status : "+networkState.getMsg());
+        });
     }
 
     //set up the recyclerview
@@ -54,14 +69,18 @@ public class ReviewMainActivity extends AppCompatActivity implements ReviewAdapt
     //2.  Set the LayoutManager
     //3.  Set hasFixedSize for performance improvement
     //4.  Set the adapter to the recylerview
-    private void setupRecyclerView() {
-        if (adapter == null) {
-            adapter = new ReviewAdapter(coffeeShopReviewsList, this);
-            recyclerView = findViewById(R.id.recyclerView);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
-        }
+    private void initUI() {
+
+        /* Recycler View */
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+
+        adapter = new ReviewAdapter(coffeeShopReviewsList, this);
+        recyclerView.setAdapter(adapter);
+
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
     }
 
     //Launch Detail Activity when user clicks on a review from Main Activity
