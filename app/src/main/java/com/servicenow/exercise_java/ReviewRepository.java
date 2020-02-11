@@ -20,13 +20,14 @@ public class ReviewRepository {
 
     private final String TAG = this.getClass().getSimpleName();
 
-    private static ReviewRepository reviewRepository;
+    /* Repository SingleTon Instance */
+    private static volatile ReviewRepository reviewRepository;
     private ReviewApi reviewApi;
 
     private MutableLiveData<NetworkState> networkState;
     private MutableLiveData<ArrayList<ReviewModel>> reviewsLiveData;
 
-    public ReviewRepository() {
+    private ReviewRepository() {
         networkState = new MutableLiveData<>();
         reviewsLiveData = new MutableLiveData<>();
 
@@ -35,7 +36,10 @@ public class ReviewRepository {
 
     public static ReviewRepository getInstance() {
         if (reviewRepository == null) {
-            reviewRepository = new ReviewRepository();
+
+            synchronized (ReviewRepository.class) {
+                reviewRepository = new ReviewRepository();
+            }
         }
         return reviewRepository;
     }
