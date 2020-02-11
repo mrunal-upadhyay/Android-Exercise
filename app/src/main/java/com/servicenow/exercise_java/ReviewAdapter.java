@@ -6,11 +6,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.servicenow.exercise.R;
-
-import java.util.List;
 
 /**
  * Adapter that does the magic of adapting the data to recyclerview. 3 important methods here
@@ -21,14 +21,13 @@ import java.util.List;
  * that are not currently shown to the user making the logic performance efficient as
  * OS does not need to make expensive findByViewId calls
  */
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHolder> {
+public class ReviewAdapter extends ListAdapter<ReviewModel, ReviewAdapter.ReviewHolder> {
 
     private final ReviewAdapterOnClickHandler reviewAdapterOnClickHandler;
-    private List<ReviewModel> reviews;
 
     //Initialize adapter
-    public ReviewAdapter(List<ReviewModel> reviews, ReviewAdapterOnClickHandler onClickHandler) {
-        this.reviews = reviews;
+    public ReviewAdapter(ReviewAdapterOnClickHandler onClickHandler) {
+        super(DIFF_CALLBACK);
         this.reviewAdapterOnClickHandler = onClickHandler;
 
     }
@@ -44,23 +43,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
     @Override
     public void onBindViewHolder(ReviewHolder holder, int position) {
         //Use position to access the correct Review object
-        ReviewModel review = this.reviews.get(position);
+        ReviewModel review = getItem(position);
         //Bind the Review object to the holder
-        holder.bindData(review);
-    }
-
-    @Override
-    public int getItemCount() {
-        if (reviews != null) {
-            return this.reviews.size();
-        }
-        return 0;
-    }
-
-    public void setReviewData(List<ReviewModel> reviews) {
-        if (reviews != null) {
-            this.reviews = reviews;
-            notifyDataSetChanged();
+        if(review != null) {
+            holder.bindData(review);
+        } else {
+            holder.clear();
         }
     }
 
@@ -85,7 +73,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            ReviewModel review = reviews.get(adapterPosition);
+            ReviewModel review = getItem(adapterPosition);
             reviewAdapterOnClickHandler.onClick(review);
         }
 
@@ -94,5 +82,24 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
             this.review.setText(review.getReview());
             this.reviewImage.setImageResource(ReviewModel.getIconResourceFromName(review.getName()));
         }
+
+        void clear() {
+            this.name.invalidate();
+            this.review.invalidate();
+            this.reviewImage.invalidate();
+        }
     }
+
+    private static DiffUtil.ItemCallback<ReviewModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<ReviewModel>() {
+
+        @Override
+        public boolean areItemsTheSame(ReviewModel oldReviewModel, ReviewModel newReviewModel) {
+            return oldReviewModel.getName() == newReviewModel.getName();
+        }
+
+        @Override
+        public boolean areContentsTheSame(ReviewModel oldReviewModel, ReviewModel newReviewModel) {
+            return oldReviewModel.getName().equals(newReviewModel.getName());
+        }
+    };
 }

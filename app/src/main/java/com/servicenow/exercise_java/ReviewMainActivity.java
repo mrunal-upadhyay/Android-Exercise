@@ -49,7 +49,7 @@ public class ReviewMainActivity extends AppCompatActivity implements ReviewAdapt
     private void subscribeReviewListObserver() {
         reviewMainViewModel.getReviews().observe(this, reviewModels -> {
             progressBar.setVisibility(View.GONE);
-            adapter.setReviewData(reviewModels);
+            adapter.submitList(reviewModels);
         });
     }
 
@@ -76,7 +76,7 @@ public class ReviewMainActivity extends AppCompatActivity implements ReviewAdapt
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
 
-        adapter = new ReviewAdapter(coffeeShopReviewsList, this);
+        adapter = new ReviewAdapter(this);
         recyclerView.setAdapter(adapter);
 
         progressBar = findViewById(R.id.progressBar);
